@@ -1,4 +1,6 @@
 drop table programare;
+drop table nr_prod;
+drop table produse_in_stoc;
 drop table cos;
 drop table oferte_disponibile;
 drop table meserie;
@@ -9,6 +11,7 @@ drop table produse;
 drop table salon;
 drop table serviciu;
 drop table stoc;
+
 
 create table clienti
 (
@@ -111,6 +114,7 @@ create table produse
     pret         int      default 0  not null,
     pret_vanzare int      default 0  not null,
     id_stoc      int                 not null,
+
     constraint id_stoc_fk
         foreign key (id_stoc) references stoc (id_stoc) on delete cascade
 );
@@ -119,7 +123,6 @@ create table produse
 create table cos
 (
     id_cos    int           primary key,
-    nr_prod   int default 0 null,
     id_client int           not null,
     constraint Cos_clienti_id_client_fk
         foreign key (id_client) references clienti (id_client)
@@ -145,4 +148,32 @@ create table meserie
         foreign key (id_angajat) references angajati (id_angajat) on delete cascade,
     constraint meserie_id_serviciu_fk
         foreign key (id_serviciu) references serviciu (id_serviciu) on delete cascade
-)
+);
+
+create table nr_prod
+(
+    nr_prod int default 1 not null,
+
+    constraint nr_prod_conex
+        check ( nr_prod > 0 ),
+
+    id_cos int not null,
+    cod_bare int not null,
+    primary key (id_cos, cod_bare),
+    constraint nr_prod_id_cos_fk
+        foreign key (id_cos) references cos (id_cos) on delete cascade,
+    constraint nr_prod_cod_bare_fk
+        foreign key (cod_bare) references produse (cod_bare) on delete cascade
+);
+
+create table produse_in_stoc
+(
+    nr_prod int default 0 not null,
+    id_stoc int not null,
+    cod_bare int not null,
+    primary key (id_stoc, cod_bare),
+    constraint produse_in_stoc_id_stoc_fk
+        foreign key (id_stoc) references stoc (id_stoc) on delete cascade,
+    constraint produse_in_stoc_cod_bare_fk
+        foreign key (cod_bare) references produse (cod_bare) on delete cascade
+);
